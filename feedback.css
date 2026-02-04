@@ -1,0 +1,15 @@
+.feedback_container{
+    margin: 0px auto;
+    text-align: center;
+}
+
+.feedback_container h2{
+    text-align: center;
+}
+
+.feedback_form{
+    display: flex;
+    gap: 30px;
+    padding: 20px;
+
+}

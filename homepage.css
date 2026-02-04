@@ -1,0 +1,21 @@
+.page_description{
+    font-size: 23px;
+    margin-top: 50px;
+    font-family: 'Galindo', sans-serif;
+    padding: 20px;
+    width: 800px;
+    margin: 0px auto;
+    text-align: center;
+}
+
+
+.london_map{
+    margin-top: 100px;
+}
+
+#map {
+    width: 1000px;
+    height: 700px;
+    border: 2px solid black;
+    align-items: center;
+}

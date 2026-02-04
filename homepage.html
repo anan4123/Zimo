@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Text font taken from Google Fonts for website branding -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Limelight&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Galindo&display=swap" rel="stylesheet">
+
+    <link rel = "stylesheet" href = "pagetemplate.css">
+    <link rel = "stylesheet" href = "homepage.css">
+    <title>Zimo - Home</title>
+
+</head>
+
+<body>
+    <!--Container with navigation links to other pages-->
+    <header class = "navigation_container">
+        <h1>Zimo</h1>
+        <nav class = "navigation_links">
+            <a href = "homepage.html">Home</a>
+            <a href = "about.html">About</a>
+            <a href = "feedback.html">Feedback</a> 
+        </nav>
+    </header>
+
+    <main class = "page_description">
+        <h3> Zimo | Portable Charger Stations in London</h3>
+        <p>The Map below shows the available charging stations across Greater London</p>
+    
+        <section class = "london_map">
+            <div id = "map"></div> 
+        </section>
+    </main>
+
+    <!--Implemntation following Google Maps documentation:-->
+    <!--https://developers.google.com/maps/documentation/javascript/add-google-map-wc-tut-->
+    <script
+        src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyDYLEegtKLJagFTUGpeA38sO8YakqQsX4M&callback=initMap"
+        defer
+    ></script>
+
+    <script>
+        function initMap(){
+            // Coordinates were taken from Google
+            const greater_london = {lat: 51.5073, lng: -0.1277 };
+
+            const map = new google.maps.Map(document.getElementById("map"), {
+                center: greater_london,
+                zoom: 10,
+            });
+        };
+    </script>
+
+</body>
+</html>
