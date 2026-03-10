@@ -1,11 +1,27 @@
 .page_description{
-    font-size: 23px;
-    margin-top: 50px;
     font-family: 'Galindo', sans-serif;
     padding: 20px;
     width: 800px;
     margin: 0px auto;
-    text-align: center;
+    font-size: 25px;
+}
+
+.page_description h1{
+    font-size: 48px;
+}
+
+.page_description h3{
+    right: -50px;
+}
+
+
+hr {
+    width: 170%;
+    top: -30px;
+    left: -220px;
+    position: relative;
+    border: 2px solid black
+    
 }
 
 
@@ -13,9 +29,28 @@
     margin-top: 100px;
 }
 
+.map_container {
+    position: relative;
+    margin: 0 auto;
+    left: -100px;
+    display: block;
+    justify-content: center;
+}
+
 #map {
     width: 1000px;
     height: 700px;
     border: 2px solid black;
-    align-items: center;
+}
+
+#searchInput {
+    position: absolute;
+    margin: 0 auto;
+    top: 10px;
+    left: 10px;
+    width: 300px;
+    padding: 15px;
+    border: 2px solid black;
+    font-size: 17px;
+    z-index: 10;
 }

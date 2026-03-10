@@ -6,6 +6,11 @@
     
 }
 
+hr{
+    top: -20px;
+    left: -10px
+}
+
 .page_description{
     margin-left: 150px;
     font-family: Galindo, sans-serif;
