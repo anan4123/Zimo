@@ -1,0 +1,23 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to edit this template
+*/
+
+.feedback_container{
+    margin: 0px auto;
+    text-align: center;
+    font-family: 'Galindo', sans-serif;
+    text-align: center;
+}
+
+.feedback_container h1{
+    text-align: center;
+    font-size: 46px;
+}
+
+.feedback_form{
+    display: inline-block;
+    gap: 30px;
+    padding: 20px;
+
+}

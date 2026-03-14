@@ -1,0 +1,50 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to edit this template
+*/
+.center_title{
+    margin-top: 120px;
+    margin-left: 150px;
+    font-size: 45px;
+    font-family: 'Limelight', sans-serif;
+    
+}
+
+hr{
+    top: -20px;
+    left: -10px
+}
+
+.page_description{
+    margin-left: 150px;
+    font-family: Galindo, sans-serif;
+    font-size: 25px;
+}
+
+.about_introduction{
+    font-size: 25px;
+    max-width: 40ch;
+}
+
+.about_introduction h4{
+    text-decoration: underline;
+}
+.about_introduction p {
+    margin-bottom: 1.5rem;
+}
+
+.idea_section{
+    margin-top: 150px;
+    margin-left: 500px;
+    font-size: 25px;
+    font-weight: 200;
+    max-width: 40ch;
+
+}
+
+.idea_section h3{
+    font-family: 'Limelight', sans-serif;
+    text-align: center;
+    font-size: 45px;
+    
+}
