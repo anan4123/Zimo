@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Text font taken from Google Fonts for website branding -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Limelight&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Galindo&display=swap" rel="stylesheet">
+
+    <link rel = "stylesheet" href = "pagetemplate.css">
+    <link rel = "stylesheet" href = "homepage.css">
+    <title>Zimo - Home</title>
+
+</head>
+
+<body>
+    <!--Container with navigation links to other pages-->
+    <header class = "navigation_container">
+        <h1>Zimo</h1>
+        <nav class = "navigation_links">
+            <a href = "homepage.html" class ="active">Home</a>
+            <a href = "about.html">About</a>
+            <a href = "feedback.html">Feedback</a> 
+        </nav>
+    </header>
+
+    <main class = "page_description">
+        <hr>
+        <h1><u>Stay connected across London</u></h1>
+
+        <div class = "content">
+            <p>Zimo helps you to locate portable charger stations across Greater London.
+                <br>
+                <br>Find a nearby kiosk and rent a power bank to keep your devices charged while you're on the move!
+            </p>
+        </div>
+        
+        <section class = "london_map">
+             <hr>
+             <h4>Click on the green markers to find out more information on each station</h4>
+            <div class = "map_container">
+                <input type = "text" id="searchInput" placeholder = "Enter address or postcode">
+                <div id = "map"></div>
+            </div> 
+        </section>
+    </main>
+
+    <!--Implementation of Google maps by following the Google Maps documentation:-->
+    <!--https://developers.google.com/maps/documentation/javascript/add-google-map-wc-tut-->
+    <script
+        src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyBk065i8fx8Jk_JhwoKkJpOw0HeLL5mj50&libraries=places&callback=initMap"
+        defer
+    ></script>
+
+    <script>
+        function initMap(){
+            // Coordinates of central London were taken from Google.com
+            const centralLondon = {lat: 51.5073, lng: -0.1277 };
+
+            const londonBounds = {
+                north: 51.7, //Coordinates are in latitude for North and South London
+                south: 51.3,
+                east: 0.24, // Coordinates are in longitude for East and West London
+                west: -0.49 
+            };
+            
+            const chargerMap = new google.maps.Map(document.getElementById("map"), {
+                center: centralLondon,
+                zoom: 10,
+                zoomControl: true,
+                mapTypeControl: false,
+                restriction: {
+                    latLngBounds: londonBounds,
+                    strictBounds: true
+                }
+            });
+
+
+            const searchInput = document.getElementById("searchInput");
+            const searchBox = new google.maps.places.SearchBox(searchInput);
+
+            chargerMap.addListener("bounds_changed", () => {
+                searchBox.setBounds(chargerMap.getBounds());
+            });
+
+            let mapMarkers = [];
+
+            searchBox.addListener("places_changed", () => {
+                const selectedLocation = searchBox.getPlaces();
+                if (!selectedLocation || selectedLocation.length === 0) return;
+
+                mapMarkers.forEach(marker => marker.setMap(null));
+                mapMarkers = [];
+
+                const searchresult_Bounds = new google.maps.LatLngBounds();
+
+                selectedLocation.forEach(location => {
+                    if (!location.geometry || !location.geometry.location) return;
+
+                    if (!chargerMap.getBounds().contains(location.geometry.location)){
+                        alert ("Please search for an address within Greater London.");
+                        return;
+                    }
+
+                    const stationMarker = new google.maps.Marker({
+                        map: chargerMap,
+                        title: location.name,
+                        position: location.geometry.location
+                    });
+
+                    mapMarkers.push(stationMarker);
+
+                    if (location.geometry.viewport) {
+                        searchresult_Bounds.union(location.geometry.viewport);
+                    } else {
+                        searchresult_Bounds.extend(location.geometry.location);
+                    }
+                });
+                chargerMap.fitBounds(searchresult_Bounds);
+            });  
+        };
+    </script>
+
+    <script src = "script.js"></script>
+
+</body>
+</html>
