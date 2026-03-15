@@ -4,16 +4,17 @@
  */
 package com.mycompany.zimobackend.resources;
 
-import com.mycompany.zimobackend.model.Station;
 import com.mycompany.zimobackend.exception.StationNotFoundException;
 import com.mycompany.zimobackend.exception.InvalidInputException;
 import com.mycompany.zimobackend.model.Station;
+import com.mycompany.zimobackend.model.Charger;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 @Path("/stations")
 public class StationResource {
@@ -23,12 +24,14 @@ public class StationResource {
     static {
         Station Station1 = new Station();
         Station1.setName("Holborn");
-        Station1.setAddress("x");
+        Station1.setAddress("271 High Holborn");
+        Station1.setPostcode("WC1V 7EE");
         Station1.setId(nextId++);
+        Station1.setLat(51.5173);
+        Station1.setLng(-0.116);
         stations.add(Station1);
     }
     
-
     
     // GET Method for all Stations
     @GET 
@@ -47,6 +50,20 @@ public class StationResource {
                 .findFirst()
                 .orElseThrow(() -> new StationNotFoundException("Station with ID " + id + " not found"));  
     }
+    
+    @GET
+    @Path("/{id}/chargers")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List <Charger> getChargerByStation(@PathParam("id") int id){
+        Station station = stations.stream()
+                .filter(s -> s.getId() == id)
+                .findFirst()
+                .orElseThrow(() -> new StationNotFoundException("Station with ID " + id + " not found"));
+        return ChargerResource.getAllChargers().stream()
+                .filter(charger -> charger.getStationId() == id)
+                .collect(Collectors.toList());
+    }
+   
     
     //Creating a new station
     @POST 

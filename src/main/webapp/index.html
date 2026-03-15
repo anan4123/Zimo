@@ -52,8 +52,10 @@
         
         <div class = "station_panel">
             <div class = "header">
-                <h3>Station Details</h3>
-                <button class = "close_panel">x</button>
+                <h3>Station Details</h3>           
+            </div>
+            
+            <div class = "information">
                 <p>Click on a marker to see the station details</p>
             </div>
         </div>
@@ -84,9 +86,16 @@
             chargerMap = new google.maps.Map(document.getElementById("map"), {
                 center: centralLondon,
                 zoom: 10,
+                mapId: "bb82da26e36861193d79291f",
                 zoomControl: true,
                 mapTypeControl: false,
+                clickableIcons: false,
+                streetViewControl: false,
                 restriction: {latLngBounds: londonBounds, strictBounds: true}
+            });
+            
+            chargerMap.addListener('click', () => {
+                closeStationPanel();
             });
             
             user_searchBox();
@@ -142,7 +151,8 @@
             });
             
             chargerMap.fitBounds(searchresult_Bounds);
-        };
+            
+        }
         
         
         function loadMapMarkers(){
@@ -173,8 +183,8 @@
            
            stations.forEach(station => {
                 const stationPin = document.createElement('button');
-                stationBtn.className = 'station-pin';
-                stationBtn.textContent = '🔋';
+                stationPin.className = 'station-pin';
+                stationPin.textContent = '🔋';
             
                 const marker = new AdvancedMarkerElement({
                     map: map,
@@ -184,22 +194,64 @@
                 });
                 
                 marker.addListener('click', () => {
-                    showStationDetails(station);
+                    displayStationPanel(station);
                 });
                 
                 mapMarkers.push(marker);
             });    
         }        
         
-        function displayStationDetail(station){
+        function displayStationPanel(station){
             const panel = document.querySelector('.station_panel');
-            panel.innerHTML = `
-                <div class = "header">
-                    <h3>$[station.name}</h3>
-        
-            `;
+            const stationInformation = panel.querySelector('.information');
             
-                    
+            fetch (`/Zimobackend/api/stations/${station.id}/chargers`)
+                .then(response => response.json())
+                .then(chargers => { 
+                    let USB_available = 0;
+                    let Lightning_available = 0;
+
+                
+                    chargers.forEach(charger => {
+                        if (charger.status === "available" && charger.chargerType === "USB-C"){
+                            USB_available++;
+                        }
+                        if (charger.status === "available" && charger.chargerType === "Lightning"){
+                            Lightning_available++;
+                        }
+                    });
+
+                    stationInformation.innerHTML = `
+                        <div class = "station_details">
+                            <h3>${station.name}</h3>
+                            <p><strong>Address: </strong>${station.address}</p>
+                            <p><strong>Postcode: </strong>${station.postcode}</p>
+
+                            <br>
+                            <div class = "charger_details">
+                                <p><strong>Available Chargers: </strong></p>
+                                <p>USB-C: ${USB_available}/2</p>
+                                <p>Lightning: ${Lightning_available}/2</p>
+                            </div>
+                        </div>
+                    `;
+            })
+                .catch (error => {
+                    stationInformation.innerHTML = `
+                        <div class = "station_details">
+                            <h3>${station.name}</h3>
+                            <p><strong>Address: </strong>${station.address}</p>
+                            <p><strong>Postcode: </strong>${station.postcode}</p>
+
+                        </div>
+                    `;
+                });
+                panel.classList.add('open');
+        }
+        
+        function closeStationPanel(){
+            const panel = document.querySelector('.station_panel');
+            document.querySelector ('.station_panel').classList.remove('open');
         }
     </script>
 

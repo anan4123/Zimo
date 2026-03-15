@@ -21,10 +21,30 @@ import java.util.stream.Collectors;
 public class ChargerResource {
     private static List<Charger> chargers = new ArrayList<>();
     private static int nextId = 1;
+    
+    public static List <Charger> getAllChargers(){
+        return chargers;
+    }
+    
+    static {
+        Charger Charger1 = new Charger();
+        Charger1.setId(nextId++);
+        Charger1.setStationId(1);
+        Charger1.setChargerType("USB-C");
+        Charger1.setStatus("available");
+        chargers.add(Charger1);
+        
+        Charger Charger2 = new Charger();
+        Charger2.setId(nextId++);
+        Charger2.setStationId(1);
+        Charger2.setChargerType("Lightning");
+        Charger2.setStatus("available");
+        chargers.add(Charger2);
+    }
 
     @GET //Get all chargers
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Charger> getAllChargers() {
+    public List<Charger> getAllCharger() {
         return chargers;
     }
         
@@ -48,16 +68,11 @@ public class ChargerResource {
             throw new InvalidInputException("Charger type is required");
         }
         
-        if (charger.getBatteryLevel() < 0 || charger.getBatteryLevel() > 100){ // Battery level must be between 0 and 100
-            throw new InvalidInputException("Battery level must be between 0-100");
-        }
-        
         if (charger.getStatus() == null || charger.getStatus().isEmpty()){ // Status cannot be left empty
             throw new InvalidInputException("Status cannot be empty");
         }
         
         charger.setId(nextId++);
-        charger.setStatus("available");
         chargers.add(charger);
         return Response.status(Response.Status.CREATED).entity(charger).build();
         

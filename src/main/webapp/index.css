@@ -74,36 +74,48 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     justify-content: center;
 }
 
+
+.station-pin {
+    width: 50px;
+    height: 50px;
+    font-size: 25px;
+    cursor: pointer;
+    background-color: rgb(156, 191, 143);
+    border-radius: 25px;
+}
+
 .station_panel {
     position: fixed;
-    top: 0;
-    right: -400px;
-    width: 350px;
-    height: 100%;
+    top: 50px;
+    right: -330px;
+    width: 320px;
+    height: 600px;
+    border: 3px solid black;
+    border-radius: 16px;
     background: white;
-    box-shadow: -2px 0 10px;
     transition: right 0.2s ease;
     z-index: 500;
     font-family: 'Open Sans', sans-serif;
+    overflow: hidden;
 }
 
 .station_panel.open{
-    right: 0;
+    right: 10px;
 }
 
-.panel_header{
-    display: flex;
+.station_panel .header {
     justify-content: space-between;
     align-items: center;
     padding: 20px;
-    background: rgb(100, 161, 92);
-    color: white;
+    background: rgb(156, 191, 143);
 }
 
 .close_panel {
     background: none;
     border: none;
-    color: white;
+    color: black;
+    cursor: pointer;
+    padding: 0 5px;
 }
 
 #map {
@@ -114,7 +126,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     box-shadow: 0 5px 13px;
 }
 
-#searchInput {
+#userInput {
     position: absolute;
     top: 20px;
     left: 20px;

@@ -9,16 +9,14 @@ public class Charger {
     private int stationId;
     private String charger_type;
     private String status;
-    private int battery_level;
     
     public Charger() {}
     
-    public Charger(int id, int stationId, String charger_type, String status, int battery_level){
+    public Charger(int id, int stationId, String charger_type, String status){
         this.id = id;
         this.stationId = stationId;
         this.charger_type = charger_type;
         this.status = status;
-        this.battery_level = battery_level;
     }
     
     public int getId(){
@@ -51,14 +49,6 @@ public class Charger {
     
     public void setStatus(String status){
         this.status = status;
-    }
-    
-    public int getBatteryLevel(){
-        return battery_level;
-    }
-    
-    public void setBatteryLevel(int battery_level){
-        this.battery_level = battery_level;
     }
 
 }
