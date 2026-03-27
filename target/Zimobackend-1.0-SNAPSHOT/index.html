@@ -45,7 +45,19 @@
              <h4>Click on the green markers to find out more information on each station</h4>
              
             <div class = "map_container">
-                <input type = "text" id="userInput" placeholder = "Enter address or postcode">
+                <div class = "search_bar">
+                    <input type = "text" id="userInput" placeholder = "Enter address or postcode">
+                    <button id = "filter_button">Filter</button>
+                </div>
+                <div id = "filter_options">
+                    <label>
+                        <input type = "checkbox" id = "USB-C"> USB-C
+                    </label>
+                    <label>
+                        <input type = "checkbox" id = "Lightning"> Lightning
+                    </label>  
+                </div>
+      
                 <div id = "map"></div>
             </div> 
         </section>
@@ -59,6 +71,8 @@
                 <p>Click on a marker to see the station details</p>
             </div>
         </div>
+         
+            
     </main>
 
     <!--Implementation of Google maps by following the Google Maps documentation:-->
@@ -71,21 +85,27 @@
     <script>
         let chargerMap;
         let mapMarkers = [];
-        
-        
+        let zimoStations = [];
+        let stationMarkers = [];
+        let searchMarkers = [];
+                 
         function ZimoMap(){
-            // Coordinates of central London were taken from Google.com
+            // Coordinates of Central London & Greater London are taken from Google.com
+  
             const centralLondon = {lat: 51.5073, lng: -0.1277 };
-            const londonBounds = {
-                north: 51.7, //Coordinates are in latitude for North and South London
+            
+            
+             const londonBounds = {
+                north: 51.7, //Coordinates in latitude for North and South London
                 south: 51.3,
-                east: 0.3, // Coordinates are in longitude for East and West London
+                east: 0.3, // Coordinates in longitude for East and West London
                 west: -0.46 
             };
+
             
             chargerMap = new google.maps.Map(document.getElementById("map"), {
                 center: centralLondon,
-                zoom: 10,
+                zoom: 5,
                 mapId: "bb82da26e36861193d79291f",
                 zoomControl: true,
                 mapTypeControl: false,
@@ -103,156 +123,7 @@
         }
 
 
-        function user_searchBox() {
-            const userInput = document.getElementById("userInput");
-            const searchBox = new google.maps.places.SearchBox(userInput);
-
-            chargerMap.addListener("bounds_changed", () => {
-                searchBox.setBounds(chargerMap.getBounds());
-            });
-            
-            searchBox.addListener("places_changed", () => {
-                searchResultHandler(searchBox);
-                
-            });
-        }
-                
-        function searchResultHandler(searchBox) {
-            const selectedLocation = searchBox.getPlaces();
-           
-            if (!selectedLocation || selectedLocation.length === 0) return;
-
-            mapMarkers.forEach(marker => marker.setMap(null));
-            mapMarkers = [];
-
-            const searchresult_Bounds = new google.maps.LatLngBounds();
-
-            selectedLocation.forEach(location => {
-                if (!location.geometry || !location.geometry.location) return;
-
-                if (!chargerMap.getBounds().contains(location.geometry.location)){
-                    alert ("Please search for an address within Greater London.");
-                    return;
-                }
-
-                const stationMarker = new google.maps.Marker({
-                    map: chargerMap,
-                    title: location.name,
-                    position: location.geometry.location
-                });
-
-                mapMarkers.push(stationMarker);
-
-                if (location.geometry.viewport) {
-                    searchresult_Bounds.union(location.geometry.viewport);
-                } else {
-                    searchresult_Bounds.extend(location.geometry.location);
-                }
-            });
-            
-            chargerMap.fitBounds(searchresult_Bounds);
-            
-        }
         
-        
-        function loadMapMarkers(){
-            console.log("Loading stations....");
-            
-            fetch('/Zimobackend/api/stations')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("Failed to load stations");
-                    }
-                    return response.json();   
-                })
-                .then(stations => {
-                    console.log("Stations has been loaded: ", stations);
-                    displayMapMarkers(chargerMap, stations);
-                })
-                
-                .catch(error => {
-                    console.error("Error occured while loading stations", error);
-                    alert("No stations found");
-                });
-        }
-        
-        
-        async function displayMapMarkers(map, stations){
-            
-            const {AdvancedMarkerElement} = await google.maps.importLibrary("marker");
-           
-           stations.forEach(station => {
-                const stationPin = document.createElement('button');
-                stationPin.className = 'station-pin';
-                stationPin.textContent = '🔋';
-            
-                const marker = new AdvancedMarkerElement({
-                    map: map,
-                    position: {lat: station.lat, lng: station.lng},
-                    title: station.name,
-                    content: stationPin
-                });
-                
-                marker.addListener('click', () => {
-                    displayStationPanel(station);
-                });
-                
-                mapMarkers.push(marker);
-            });    
-        }        
-        
-        function displayStationPanel(station){
-            const panel = document.querySelector('.station_panel');
-            const stationInformation = panel.querySelector('.information');
-            
-            fetch (`/Zimobackend/api/stations/${station.id}/chargers`)
-                .then(response => response.json())
-                .then(chargers => { 
-                    let USB_available = 0;
-                    let Lightning_available = 0;
-
-                
-                    chargers.forEach(charger => {
-                        if (charger.status === "available" && charger.chargerType === "USB-C"){
-                            USB_available++;
-                        }
-                        if (charger.status === "available" && charger.chargerType === "Lightning"){
-                            Lightning_available++;
-                        }
-                    });
-
-                    stationInformation.innerHTML = `
-                        <div class = "station_details">
-                            <h3>${station.name}</h3>
-                            <p><strong>Address: </strong>${station.address}</p>
-                            <p><strong>Postcode: </strong>${station.postcode}</p>
-
-                            <br>
-                            <div class = "charger_details">
-                                <p><strong>Available Chargers: </strong></p>
-                                <p>USB-C: ${USB_available}/2</p>
-                                <p>Lightning: ${Lightning_available}/2</p>
-                            </div>
-                        </div>
-                    `;
-            })
-                .catch (error => {
-                    stationInformation.innerHTML = `
-                        <div class = "station_details">
-                            <h3>${station.name}</h3>
-                            <p><strong>Address: </strong>${station.address}</p>
-                            <p><strong>Postcode: </strong>${station.postcode}</p>
-
-                        </div>
-                    `;
-                });
-                panel.classList.add('open');
-        }
-        
-        function closeStationPanel(){
-            const panel = document.querySelector('.station_panel');
-            document.querySelector ('.station_panel').classList.remove('open');
-        }
     </script>
 
     <script src = "script.js"></script>

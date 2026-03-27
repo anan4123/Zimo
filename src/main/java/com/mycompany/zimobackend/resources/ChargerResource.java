@@ -6,9 +6,9 @@ package com.mycompany.zimobackend.resources;
 
 import com.mycompany.zimobackend.model.Charger;
 import com.mycompany.zimobackend.model.Station;
-import com.mycompany.zimobackend.exception.ChargerNotFoundException;
+import com.mycompany.zimobackend.exception.ChargerErrorException;
 import com.mycompany.zimobackend.exception.InvalidInputException;
-import com.mycompany.zimobackend.exception.StationNotFoundException;
+import com.mycompany.zimobackend.exception.StationErrorException;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -22,10 +22,7 @@ public class ChargerResource {
     private static List<Charger> chargers = new ArrayList<>();
     private static int nextId = 1;
     
-    public static List <Charger> getAllChargers(){
-        return chargers;
-    }
-    
+        
     static {
         Charger Charger1 = new Charger();
         Charger1.setId(nextId++);
@@ -44,7 +41,7 @@ public class ChargerResource {
 
     @GET //Get all chargers
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Charger> getAllCharger() {
+    public static List<Charger> getAllChargers() {
         return chargers;
     }
         
@@ -52,13 +49,28 @@ public class ChargerResource {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Charger getChargerById(@PathParam("id") int id){
-        return chargers.stream()
-                .filter(charger -> charger.getId() == id)
-                .findFirst()
-                .orElseThrow(() -> new ChargerNotFoundException("Charger with ID: " + id + " not found"));
+        for (Charger c : chargers){
+            if (c.getId() == id){
+                return c;
+            }
+        }
+        throw new ChargerErrorException("Charger with ID: " + id + "not found");
     }
     
-  
+    @GET
+    @Path("/station/{stationId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Charger> getChargersByStation(@PathParam("stationId") int stationId) {
+       try {
+           return chargers.stream()
+                   .filter(c -> c.getStationId() == stationId)
+                   .collect(Collectors.toList());
+         
+       } catch (Exception e){
+           throw new ChargerErrorException("Unable to find chargers at station " + stationId);
+           
+       }
+    }
     
     @POST //Add new charger
     @Consumes(MediaType.APPLICATION_JSON)
@@ -68,14 +80,65 @@ public class ChargerResource {
             throw new InvalidInputException("Charger type is required");
         }
         
-        if (charger.getStatus() == null || charger.getStatus().isEmpty()){ // Status cannot be left empty
-            throw new InvalidInputException("Status cannot be empty");
+        int charger_count = 0;
+        for (Charger c: chargers){
+            if (c.getStationId() == charger.getStationId() && c.getChargerType().equals(charger.getChargerType())){
+                charger_count++;
+            }
+        }
+        
+        if (charger_count >= 2){
+            throw new InvalidInputException("Maximum of 2 chargers for this type at each station");
         }
         
         charger.setId(nextId++);
         chargers.add(charger);
         return Response.status(Response.Status.CREATED).entity(charger).build();
+    }
+    
+    @POST
+    @Path("/{id}/rent")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response rentCharger(@PathParam("id") int id){
+        Charger charger = null;
+        for (Charger c : chargers){
+            if (c.getId() == id){
+                charger = c;
+                break;
+            }
+        }
         
+        if (charger == null){
+            throw new ChargerErrorException("Charger not found");
+        }
+        
+        if ("available".equals(charger.getStatus())){
+            charger.setStatus("in_use");
+            return Response.status(Response.Status.OK).entity(charger).build();
+        } 
+        else {
+            return Response.status(Response.Status.BAD_REQUEST).entity(charger).build();
+        }  
+    }
+    
+    @POST
+    @Path("/{id}/return")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response returnCharger(@PathParam("id") int id){
+        Charger charger = null;
+        for (Charger c : chargers){
+            if (c.getId() == id){
+                charger = c;
+                break;
+            }
+        }
+        
+        if (charger == null){
+            throw new ChargerErrorException("Charger not found");
+        }
+        
+        charger.setStatus("available");
+        return Response.status(Response.Status.OK).entity(charger).build();
     }
     
     @DELETE // Delete charger
@@ -83,7 +146,7 @@ public class ChargerResource {
     public void deleteCharger(@PathParam("id") int id){
         boolean removed = chargers.removeIf(charger -> charger.getId() == id);
         if(!removed){
-            throw new ChargerNotFoundException("Unable to find charer ID: " + id);
+            throw new ChargerErrorException("Unable to find charger ID: " + id);
         }
     }
     

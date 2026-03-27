@@ -4,7 +4,7 @@
  */
 package com.mycompany.zimobackend.resources;
 
-import com.mycompany.zimobackend.exception.StationNotFoundException;
+import com.mycompany.zimobackend.exception.StationErrorException;
 import com.mycompany.zimobackend.exception.InvalidInputException;
 import com.mycompany.zimobackend.model.Station;
 import com.mycompany.zimobackend.model.Charger;
@@ -45,10 +45,12 @@ public class StationResource {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Station getStationById(@PathParam("id") int id){
-        return stations.stream()
-                .filter(station -> station.getId() == id)
-                .findFirst()
-                .orElseThrow(() -> new StationNotFoundException("Station with ID " + id + " not found"));  
+        for (Station s : stations){
+            if (s.getId() == id){
+                return s;
+            }
+        }
+        throw new StationErrorException("Station with ID " + id + " not found");  
     }
     
     @GET
@@ -58,7 +60,7 @@ public class StationResource {
         Station station = stations.stream()
                 .filter(s -> s.getId() == id)
                 .findFirst()
-                .orElseThrow(() -> new StationNotFoundException("Station with ID " + id + " not found"));
+                .orElseThrow(() -> new StationErrorException("Station with ID " + id + " not found"));
         return ChargerResource.getAllChargers().stream()
                 .filter(charger -> charger.getStationId() == id)
                 .collect(Collectors.toList());
@@ -99,7 +101,7 @@ public class StationResource {
         Station station_found = stations.stream()
                 .filter(station -> station.getId() == id)
                 .findFirst()
-                .orElseThrow(() -> new StationNotFoundException("Station " + id + " not found"));
+                .orElseThrow(() -> new StationErrorException("Station " + id + " not found"));
         station_found.setStatus(updatedStation.getStatus());
         return station_found;
     }
@@ -109,7 +111,7 @@ public class StationResource {
     public void deleteStation(@PathParam("id") int id){
         boolean removed = stations.removeIf(station -> station.getId() == id);
         if (!removed){
-            throw new StationNotFoundException("Unable to find station ID: " + id);
+            throw new StationErrorException("Unable to find station ID: " + id);
         }
     }
 
