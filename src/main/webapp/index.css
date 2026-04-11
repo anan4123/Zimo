@@ -81,7 +81,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     border-radius: 25px;
 }
 
-.station_panel {
+.station_panel, .filter_panel {
     position: fixed;
     top: 50px;
     right: -330px;
@@ -96,11 +96,11 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     overflow: hidden;
 }
 
-.station_panel.open{
+.station_panel.open, .filter_panel.open{
     right: 10px;
 }
 
-.station_panel .header {
+.station_panel .header, .filter_panel .filter_header{
     justify-content: space-between;
     align-items: center;
     padding: 20px;
@@ -138,22 +138,19 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     font-weight: 600;
 }
 
-#filter_options{
-   position: absolute;
-   display: none;
-   top: 70px;
-   left: 20px;
-   background: white;
-   padding: 12px;
-   border: 2px solid black;
-   border-radius: 8px;
-   z-index: 10;
+.filter_option{
+   padding: 20px;
 }
 
-#filter_options label{
+.filter_option label{
     display: block;
     margin-bottom: 6px;
     cursor: pointer
+}
+
+.filter_option input[type="checkbox"]{
+    width: 18px;
+    height: 18px;
 }
 
 #map {

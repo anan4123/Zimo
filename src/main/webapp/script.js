@@ -61,7 +61,7 @@ function searchResultHandler(searchBox) {
 function loadMapMarkers(){
     console.log("Loading stations....");
 
-    fetch('/Zimobackend/api/stations')
+    fetch('/Zimo/api/stations')
         .then(response => {
             if (!response.ok) {
                 throw new Error("Failed to load stations");
@@ -109,7 +109,7 @@ function displayStationPanel(station){
     const panel = document.querySelector('.station_panel');
     const stationInformation = panel.querySelector('.information');
 
-    fetch (`/Zimobackend/api/stations/${station.id}/chargers`)
+    fetch (`/Zimo/api/stations/${station.id}/chargers`)
         .then(response => response.json())
         .then(chargers => { 
             let USB_available = 0;
@@ -187,7 +187,7 @@ function closeStationPanel(){
 }
 
 function rentCharger(stationId, type){
-    fetch(`/Zimobackend/api/stations/${stationId}/chargers`)
+    fetch(`/Zimo/api/stations/${stationId}/chargers`)
             .then(response => response.json())
             .then(chargers => {
                 let charger_selected = null;
@@ -204,7 +204,7 @@ function rentCharger(stationId, type){
                 return;
             }
 
-            return fetch(`/Zimobackend/api/chargers/${charger_selected.id}/rent`, {method: `POST` });
+            return fetch(`/Zimo/api/chargers/${charger_selected.id}/rent`, {method: `POST` });
         })
                 .then(response => response.json())
                 .then(rentResult => {
@@ -218,7 +218,7 @@ function rentCharger(stationId, type){
 }
 
 function returnCharger(stationId, type){
-    fetch(`/Zimobackend/api/stations/${stationId}/chargers`)
+    fetch(`/Zimo/api/stations/${stationId}/chargers`)
             .then(response => response.json())
             .then(chargers => {
                 let charger_selected = null;
@@ -235,7 +235,7 @@ function returnCharger(stationId, type){
                 return;
             }
 
-            return fetch(`/Zimobackend/api/chargers/${charger_selected.id}/return`, {method: `POST` });
+            return fetch(`/Zimo/api/chargers/${charger_selected.id}/return`, {method: `POST` });
         })
                 .then(response => response.json())
                 .then(returnResult => {
@@ -249,15 +249,75 @@ function returnCharger(stationId, type){
     
 }
 
+const searchFilter = document.getElementById('filter_button');
+
+function displayFilterPanel(){
+    const panel = document.querySelector('.filter_panel');
+    panel.classList.add('open');
+    
+}
+
+function closeFilterPanel(){
+    const panel = document.querySelector('.filter_panel');
+    document.querySelector ('.filter_panel').classList.remove('open');
+    
+}
+
+
+searchFilter.onclick = displayFilterPanel;
+
+
 
 const USBC_option = document.getElementById('USB-C');
 const Lightning_option = document.getElementById('Lightning');
 
 function filterStations(){
-    const display_USB = USB_option.checked;
+    
+    const display_USBC = USBC_option.checked;
+    const display_Lightning = Lightning_option.checked;
+    
+    
+    if (!display_USBC && !display_Lightning){
+        stationMarkers.forEach(marker => marker.map = chargerMap);
+        return;
+    }
+    
+    
+    stationMarkers.forEach((marker, i) => {
+        const station = zimoStations[i];
+    
+    
+        fetch(`/Zimo/api/stations/${station.id}/chargers`)
+                .then(response => response.json())
+                .then(chargers => {
+                    let display_markers = false;
+
+                    chargers.forEach(charger => {
+                        if (charger.status === "available") {
+                            if (display_USBC && charger.chargerType === "USB-C")
+                                display_markers = true;
+                            if (display_Lightning && charger.chargerType === "Lightning")
+                                display_markers = true;
+                        }
+                    });
+
+                    if (display_markers) {
+                        marker.map = chargerMap;
+                    }
+                    else {
+                        marker.map = null;
+
+                    }
+                });
+
+
+    });
 
 
 }
+
+USBC_option.addEventListener('change', filterStations);
+Lightning_option.addEventListener('change', filterStations);
 
 
 function submitFeedback(event){
@@ -271,7 +331,7 @@ function submitFeedback(event){
         recommendation: document.querySelector('input[name = "recommend"]:checked')?.value || ''
     };
     
-    fetch ('/Zimobackend/api/feedback', {
+    fetch ('/Zimo/api/feedback', {
         method: "POST",
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(feedbackData)

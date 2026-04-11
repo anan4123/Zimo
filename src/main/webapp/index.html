@@ -49,14 +49,7 @@
                     <input type = "text" id="userInput" placeholder = "Enter address or postcode">
                     <button id = "filter_button">Filter</button>
                 </div>
-                <div id = "filter_options">
-                    <label>
-                        <input type = "checkbox" id = "USB-C"> USB-C
-                    </label>
-                    <label>
-                        <input type = "checkbox" id = "Lightning"> Lightning
-                    </label>  
-                </div>
+               
       
                 <div id = "map"></div>
             </div> 
@@ -71,51 +64,75 @@
                 <p>Click on a marker to see the station details</p>
             </div>
         </div>
+        
+        <div class = "filter_panel">
+            <div class = "filter_header">
+                <h3>Filter Searches</h3>
+            </div>
+            
+            <div class = "filter_option">
+                <p><strong>Select Charger Type:</strong></p>
+                
+                <label>
+                    <input type = "checkbox" id = "USB-C"> USB-C
+                </label>
+                
+                <br>
+                
+                <label>
+                    <input type = "checkbox" id = "Lightning"> Lightning
+                </label>
+                
+                
+            </div>
+        </div>
          
             
     </main>
 
-    <!--Implementation of Google maps by following the Google Maps documentation:-->
-    <!--https://developers.google.com/maps/documentation/javascript/add-google-map-wc-tut-->
+    <!-- The implementation was adapted from Google Maps Java Script API - Add a Google Map to a Web Page (Google, 2026)-->
     <script
         src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyBk065i8fx8Jk_JhwoKkJpOw0HeLL5mj50&libraries=places&callback=ZimoMap"
         defer
     ></script>
 
     <script>
+        // Global variables created for the map
         let chargerMap;
-        let mapMarkers = [];
-        let zimoStations = [];
-        let stationMarkers = [];
+        let mapMarkers = []; 
+        let zimoStations = []; //Array storing all charging stations created from back-end
+        let stationMarkers = []; // Array containing all station markers from each station
         let searchMarkers = [];
                  
-        function ZimoMap(){
-            // Coordinates of Central London & Greater London are taken from Google.com
+                 
   
+        // The code was adapted from the Google Maps JavaScript - Restrict Map Bounds documentation (Google, 2026)
+        function ZimoMap(){
+            // Coordinates of Central London & London Bounds are taken from Google Maps.com
             const centralLondon = {lat: 51.5073, lng: -0.1277 };
-            
-            
-             const londonBounds = {
-                north: 51.7, //Coordinates in latitude for North and South London
-                south: 51.3,
-                east: 0.3, // Coordinates in longitude for East and West London
-                west: -0.46 
+            const londonBounds = {
+               north: 51.7, //Coordinates in latitude for North London 
+               south: 51.3, // Coordinates in latitude for South London
+               east: 0.3, // Coordinates in longitude for East London
+               west: -0.46 // Coordinates in llongitude for West London
             };
 
             
+            // Adapted from Google Maps JavaScript - Controls Documentation (Google, 2026)
             chargerMap = new google.maps.Map(document.getElementById("map"), {
                 center: centralLondon,
                 zoom: 5,
                 mapId: "bb82da26e36861193d79291f",
                 zoomControl: true,
-                mapTypeControl: false,
-                clickableIcons: false,
+                mapTypeControl: false, 
+                clickableIcons: false, 
                 streetViewControl: false,
-                restriction: {latLngBounds: londonBounds, strictBounds: true}
+                restriction: {latLngBounds: londonBounds, strictBounds: true} // restricting map to Greater London
             });
             
-            chargerMap.addListener('click', () => {
+            chargerMap.addListener('click', () => { //panel closes when user clicks on map
                 closeStationPanel();
+                closeFilterPanel();
             });
             
             user_searchBox();

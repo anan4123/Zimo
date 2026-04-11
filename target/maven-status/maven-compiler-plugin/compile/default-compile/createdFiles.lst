@@ -1,11 +1,12 @@
-com/mycompany/zimobackend/resources/JakartaEE91Resource.class
-com/mycompany/zimobackend/resources/ChargerResource.class
-com/mycompany/zimobackend/exception/StationErrorException.class
+com/mycompany/zimobackend/model/Feedback.class
 com/mycompany/zimobackend/model/Station.class
 com/mycompany/zimobackend/exception/ChargerErrorException.class
-com/mycompany/zimobackend/JAXRSConfiguration.class
 com/mycompany/zimobackend/exception/InvalidInputException.class
+com/mycompany/zimobackend/resources/StationResource.class
+com/mycompany/zimobackend/resources/FeedbackResource.class
+com/mycompany/zimobackend/resources/ChargerResource.class
+com/mycompany/zimobackend/exception/StationErrorException.class
+com/mycompany/zimobackend/JAXRSConfiguration.class
 com/mycompany/zimobackend/exception/StationExceptionHandler.class
 com/mycompany/zimobackend/exception/ChargerExceptionHandler.class
-com/mycompany/zimobackend/resources/StationResource.class
 com/mycompany/zimobackend/model/Charger.class
