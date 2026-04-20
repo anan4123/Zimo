@@ -1,21 +1,17 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.zimobackend.model;
 
 public class Charger {
     private int id;
     private int stationId;
-    private String charger_type;
+    private String chargerType;
     private String status;
     
     public Charger() {}
     
-    public Charger(int id, int stationId, String charger_type, String status){
+    public Charger(int id, int stationId, String chargerType, String status){
         this.id = id;
         this.stationId = stationId;
-        this.charger_type = charger_type;
+        this.chargerType = chargerType;
         this.status = status;
     }
     
@@ -36,11 +32,11 @@ public class Charger {
     }
     
     public String getChargerType(){
-        return charger_type;
+        return chargerType;
     }
     
-    public void setChargerType(String charger_type){
-        this.charger_type = charger_type;
+    public void setChargerType(String chargerType){
+        this.chargerType = chargerType;
     }
     
     public String getStatus(){
